@@ -1,8 +1,8 @@
 ---
-title: "Simulation of an Exponential Distribution and the Central Limit Theorem"
-author: "Manuel A. Cerda R."
-date: "31 de July de 2016"
-output: html_document
+Title: "Simulation of an Exponential Distribution and the Central Limit Theorem"
+Author: "Manuel A. Cerda R."
+Date: "31 de July de 2016"
+Output: html_document
 ---
 
 #Overview
@@ -20,7 +20,6 @@ This simulation investigates the exponential distribution in R and compares it w
 
 ###Simulations
 
-Preparing the necessary dataset:
 ```{r sampling, echo=TRUE}
 library(knitr)
 library(ggplot2)
@@ -29,10 +28,39 @@ library(ggplot2)
 set.seed(1234);
 
 # declaring known variables 
-# (lambda, mean of exp. distribution, standard deviation, number of distribution averages, simulations)
+# (lambda, theoretical mean, standard deviation, number of distribution averages, simulations)
 lambda <- 0.2
-m_exp <- 1/lambda
+t_mean <- 1/lambda
 sd <- 1/lambda
 n <- 40
 n_sim <- 1000
+
+# generating n=40 random exponentials
+my_rexp <- function() { rexp(n, rate = lambda) }
+summary(my_rexp())
+
+# generating the 1000 simulated trials
+simTrials <- data.frame(values=replicate(n_sim, mean(my_rexp() )))
+summary(simTrials$values)
+
+# calculating cumputable variables
+# (theoretical standard deviation)
+t_sd <- sd * 1 / sqrt(n)
 ```
+
+
+###Sample Mean versus Theoretical Mean
+
+```{r smean_tmean, echo=TRUE}
+# Random Exponential Distribution
+hist(simTrials$values, freq= T, ylab= "Frequency", xlab="Random Exponential", main="Random Exponential Distribution", col=rgb(0, 1, 0, 0.25))
+abline(v = t_mean, col="red", lwd = 2, lty = 1)
+
+```
+
+
+###Sample Variance versus Theoretical Variance
+
+
+
+###Distributions
