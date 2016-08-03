@@ -71,7 +71,7 @@ lines(xfit + t_var, yfit*10, lty=2, col ="blue")
 
 ```
 
-The difference between the Sample Variance and the Theoretical Variance is remarquable in variability of the exponentials as they accumulate around the.
+The difference between the Sample Variance and the Theoretical Variance is remarquable in variability of the exponentials as they accumulate around the mean.
 
 
 ###Distributions
