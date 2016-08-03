@@ -1,8 +1,8 @@
 ---
-Title: "Simulation of an Exponential Distribution and the Central Limit Theorem"
-Author: "Manuel A. Cerda R."
-Date: "31 de July de 2016"
-Output: html_document
+author: Manuel A. Cerda R.
+date: 31 de July de 2016
+output: html_document
+title: Simulation of an Exponential Distribution and the Central Limit Theorem
 ---
 
 #Overview
@@ -21,9 +21,6 @@ This simulation investigates the exponential distribution in R and compares it w
 ###Simulations
 
 ```{r sampling, echo=TRUE, warning=FALSE}
-library(knitr)
-library(ggplot2)
-
 # setting the random generator seed to ensure replicable steps
 set.seed(1234);
 
@@ -86,4 +83,4 @@ h <- hist(simTrials$values, breaks =n, freq= T, ylab= "Frequency", xlab="Random 
 lines(xfit , yfit * 100, lty=2, col ="orange")
 ```
 
-It makes sense to say that simulating a thousand trials makes the results get closer to a normal distribution.
+It makes sense to say that simulating a thousand trials makes the results get closer to a normal distribution. Also, with this behaviours, It's demonstrated the Central Limit Theorem where the population has a mean and all of its values are centered around the mean.

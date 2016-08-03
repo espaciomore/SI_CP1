@@ -1,0 +1,94 @@
+---
+title: "The ToothGrowth Data Analysis"
+author: "Manuel A. Cerda R."
+date: "July 31th, 2016"
+output: html_document
+---
+
+#Overview
+
+The objective of this analysis is to explore the ToothGrowth dataset from R collection of datasets.
+
+The dataset consists of 60 observations, length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of Vitamin C (0.5, 1 and 2 mg) with each of two delivery methods (orange juice or ascorbic acid).
+
+
+###Instructions
+
+1.- Load the ToothGrowth data and perform some basic exploratory data analysis
+
+2.- Provide a basic summary of the data.
+
+3.- Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
+
+4.- State your conclusions and the assumptions needed for your conclusions.
+
+
+###Data Processing
+
+```{r dataprocessing, echo=T, warning=F}
+data("ToothGrowth")
+summary(ToothGrowth)
+```
+
+
+###Data Analysis
+
+```{r dataanalysis, echo=T, warning=F}
+require(ggplot2)
+g <- ggplot(data = ToothGrowth, aes(x=supp, y=len))
+g <- g + geom_boxplot(aes(fill=supp))
+g <- g + geom_point(aes(y=len, group=supp), position = position_dodge(width=0.75))
+g <- g + facet_wrap( ~ dose, scales="free")
+g <- g + xlab("") + ylab("Length") + ggtitle("Tooth Growth per Supplement")
+g <- g + guides(fill=guide_legend(title="Supplements"))
+g
+```
+
+The Tooth Growth is affected by the supplement intake but also by the dose/quantity administered.
+
+Can we really conclude that Orange Juice/Ascorbic Acid is a cause of Tooth Growth?
+
+Considering testing the hypothesis that there is NO mean increased in Tooth Growth witht an higher dosage of the supplements.
+
+```{r test, echo=T, warning=F}
+require(graphics)
+
+ojDose <- subset(ToothGrowth, supp == "OJ")
+vcDose <- subset(ToothGrowth, supp == "VC")
+gt0_5Dose <- subset(ToothGrowth, dose > 0.5)
+
+pt_both <- pt(ToothGrowth$len, length(ToothGrowth$len), df=1, lower.tail=T)
+pt_oj <- pt(ojDose$len, length(ojDose$len), df=1, lower.tail=T)
+pt_vc <- pt(vcDose$len, length(vcDose$len), df=1, lower.tail=T)
+pt_gt0_5 <- pt(gt0_5Dose$len, length(gt0_5Dose$len), df=1, lower.tail=T)
+
+xfit <- seq(min(pt_both), max(pt_both), length = 1000) 
+
+yfit <- dnorm(xfit, mean = mean(pt_oj), sd = sd(pt_oj))
+plot(xfit*1000, yfit*1, type="l", lty=2, col ="red", xlab="Distribution", ylab = "Dose", main="Ascorbic Acid all Dose")
+
+yfit <- dnorm(xfit, mean = mean(pt_vc), sd = sd(pt_vc))
+plot(xfit*1000, yfit*1, type="l", lty=2, col ="blue", xlab="Distribution", ylab = "Dose", main="Vitamin C all Dose")
+
+yfit <- dnorm(xfit, mean = mean(pt_gt0_5), sd = sd(pt_gt0_5))
+plot(xfit*1000, yfit*1, type="l", lty=2, col ="black", xlab="Distribution", ylab = "Dose", main="All Supplement with Dose higher than 0.5")
+
+# plotting separate dose to see tooth grow independently
+plot(ToothGrowth$dose, ToothGrowth$len, ylim=range(min(ToothGrowth$len):max(ToothGrowth$len)), xlim=range(seq(0.5,2.0,length=3)), col ="black", xlab="Dose", ylab = "Tooth Growth", main="Tooth Growth per Dose")
+lines(ojDose$dose, ojDose$len, lty=2, col ="red")
+lines(vcDose$dose, vcDose$len, lty=2, col ="blue")
+
+```
+
+The evidence of Tooth Growth is obvious but is it due to Supplements or Dose?
+
+```{r ttest, echo=T, warning=F}
+# computing a t.test to find out if Dose is more important than Supplements
+tt <- t.test(ojDose$len, vcDose$len, paired = F)
+print(tt)
+```
+
+
+###Conclusion
+
+Assuming that the Tooth Growth is not due to Dose then I would know by looking at ```r tt$p.value * 100```% of the random samples. But, accepting this hypothesis would make me fall in a Type I error. With ```r tt$p.value * 100```% probability of being wrong I accept my hypothesis concluding that **Tooth Growth is NOT all related to Dose**. In fact, Tooth Growth is showing a decrease from higher Dose.
