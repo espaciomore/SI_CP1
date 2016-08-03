@@ -20,7 +20,7 @@ This simulation investigates the exponential distribution in R and compares it w
 
 ###Simulations
 
-```{r sampling, echo=TRUE}
+```{r sampling, echo=TRUE, warning=FALSE}
 library(knitr)
 library(ggplot2)
 
@@ -52,11 +52,14 @@ t_var <- t_sd^2
 
 ###Sample Mean versus Theoretical Mean
 
-```{r smean_tmean, echo=TRUE}
-# Random Exponential Distribution
-h <- hist(simTrials$values, freq= T, ylab= "Frequency", xlab="Random Exponential", main="Random Exponential Distribution", col=rgb(1, 1, 1, 0.25))
-abline(v = t_mean, col="red", lwd = 2, lty = 1)
-abline(v = s_mean, col="blue", lwd = 2, lty = 1)
+```{r smean_tmean, echo=TRUE, warning=FALSE}
+# Normal Exponential Distribution
+xfit <- seq(min(simTrials$values), max(simTrials$values), length = n_sim) 
+yfit <- dnorm(xfit, mean = s_mean, sd = s_sd)
+
+plot(xfit, yfit*50, lty=1, type="l", ylab= "Frequency", xlab="Random Exponential", main="", xaxt='n', yaxt='n')
+
+lines(xfit, yfit*50 + t_sd, lty=2, col ="red")
 ```
 
 The Sample Mean is close enough to the Theoretical Mean.
@@ -64,15 +67,10 @@ The Sample Mean is close enough to the Theoretical Mean.
 ###Sample Variance versus Theoretical Variance
 
 ```{r svar_tvar, echo=TRUE, warning=FALSE}
-# Random Exponential Distribution
-t_density <- density(dnorm(simTrials$values, mean = t_mean, sd= t_sd), kernel="gaussian")
-plot(t_density$x, t_density$y, col = "pink", type="l", xlab="Random Exponential", ylab="Density", axes=F)
+# Normal Exponential Distribution
+plot(xfit, yfit*10, lty=1, type="l", ylab= "Frequency", xlab="Random Exponential", main="", xaxt='n', yaxt='n')
 
-s_density <- density(dnorm(simTrials$values, mean = s_mean, sd= s_sd), kernel="gaussian")
-lines(s_density$x, s_density$y, col = "black")
-
-abline(v = t_var/2, col="red", lwd = 1, lty = 2)
-abline(v = s_var/2, col="blue", lwd = 1, lty = 2)
+lines(xfit + t_var, yfit*10, lty=2, col ="blue")
 
 ```
 
@@ -82,18 +80,10 @@ The difference between the Sample Variance and the Theoretical Variance is remar
 ###Distributions
 
 ```{r distribution, echo=TRUE, warning=FALSE}
-seq40 <- runif(1000, min=0, max=40)
-g_dnorm <- dnorm(seq40, mean= mean(seq40), sd= sd(seq40))
-s_dnorm <- dnorm(simTrials$values, mean = s_mean, sd= s_sd)
+# Normal Exponential Distribution
+h <- hist(simTrials$values, breaks =n, freq= T, ylab= "Frequency", xlab="Random Exponential", main="", col=rgb(1, 1, 1, 0.25))
 
-plot(sort(g_dnorm), col = "orange", type="l", xlab="Random Exponential", ylab="Density")
-
-hg <- hist(g_dnorm, plot = F)
-abline(v = max(hg$counts), col = "orange")
-
-hs <- hist(s_dnorm, plot = F)
-abline(v = max(hs$counts), col = "blue")
-
-ht <- hist(dnorm(sort(simTrials$values), mean = t_mean, sd= t_sd), plot = F)
-abline(v = max(ht$counts), col = "red")
+lines(xfit , yfit * 100, lty=2, col ="orange")
 ```
+
+It makes sense to say that simulating a thousand trials makes the results get closer to a normal distribution.
